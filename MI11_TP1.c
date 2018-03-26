@@ -37,14 +37,17 @@ void usePin(PORT_X port, uint32_t GPIO_N, DIRECTION direction)
 
   GpioConfigRegisters_t* PortConfig = (GpioConfigRegisters_t*)(PORT_A_BASE_ADDRESS + port*0x100);
 
-  PortConfig->GIUS |= 1<<GPIO_N;
-  PortConfig->DDIR |= direction<<GPIO_N;
+  PortConfig->GIUS |= (1<<GPIO_N);
+  PortConfig->DDIR &= ~(direction<<GPIO_N);
+  PortConfig->DDIR |= (direction<<GPIO_N);
+
+
+  uint32_t* RegisterToUse = &(PortConfig->OCR1) + (GPIO_N>=16);
+  (*RegisterToUse) &= (0b11<<((GPIO_N%16)*2));
 
   if(direction==OUTPUT)
-  {
-    uint32_t* RegisterToUse = &(PortConfig->OCR1) + (GPIO_N>=16);
-    *RegisterToUse = ((*RegisterToUse) & (0b11<<((GPIO_N%16)*2))) | (0b11<<((GPIO_N%16)*2));
-  }
+    *RegisterToUse |= (0b11<<((GPIO_N%16)*2));
+
 }
 
 void setPinOutput(PORT_X port, uint32_t GPIO_N, VALUE value)
@@ -54,7 +57,8 @@ void setPinOutput(PORT_X port, uint32_t GPIO_N, VALUE value)
 
   GpioConfigRegisters_t* PortConfig = (GpioConfigRegisters_t*)(PORT_A_BASE_ADDRESS + port*0x100);
 
-  PortConfig->DR |= value;
+  PortConfig->DR &= ~(value<<GPIO_N);
+  PortConfig->DR |= (value<<GPIO_N);
 }
 
 VALUE readPinInput(PORT_X port, uint32_t GPIO_N)
