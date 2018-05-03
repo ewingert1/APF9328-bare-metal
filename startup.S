@@ -143,7 +143,7 @@ suite2:
 
 	mrs r0, CPSR      @ Copie CPSR dans r0
 	bic r0, r0, #0x1f @ Met à 0 les 5 bits M
-	orr r0, r0, #0x12 @ et change vers le mode superviseur
+	orr r0, r0, #0x12 @ et change vers le mode irq
 	msr CPSR_c, r0    @ Recharge les bits de contrôle
 	nop               @ de CPSR
 
