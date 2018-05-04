@@ -52,13 +52,20 @@ unsigned int allumee=0;
 
 void init_Timer(void)
 {
+	// Activer l'écoute du timer dans l'AITC
 	*((unsigned int*)INTENNUM) = 0x3Bu;
+	// Activer les interruptions IRQ dans le processeur
 	irq_enable();
 
+	// Initialisation du timer à 0
 	*((unsigned int*)TCN1) = 0;
+	// Prédiviseur = 1 : pas de prédiviseur
 	*((unsigned int*)TPRER1) = 0;
+	// Valeur limite = fréquence => Période=1s
 	*((unsigned int*)TCMP1) = 32000;
+	// Définition de la clock source + IRQEnable
 	*((unsigned int*)TCTL1) = Clk_Source_32k|IRQEn;
+	// Démarrage du timer
 	*((unsigned int*)TCTL1) |= TimerEn;
 }
 
